@@ -19,3 +19,13 @@ fun <A> isSorted(aa: List<A>, ordered: (A, A) -> Boolean): Boolean {
     }
     return loop(aa)
 }
+
+
+// exercise 2.3
+fun <A, B, C> curry(f: (A, B) -> C): (A) -> (B) -> C = { a -> { b -> f(a, b) } }
+
+// exercise 2.4
+fun <A, B, C> uncurry(f: (A) -> (B) -> C): (A, B) -> C = { a, b -> f(a)(b) }
+
+// exercise 2.5
+fun <A, B, C> compose(f: (B) -> C, g: (A) -> B): (A) -> C = { a -> f(g(a)) }

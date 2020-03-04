@@ -29,4 +29,20 @@ class ChapterTwoTest : StringSpec({
             row(listOf(1, 1, 1), true)
         ) { aa, exp -> isSorted(aa) { a,b -> a <= b} shouldBe exp }
     }
+
+    "curry" {
+        curry { x: Int, y: Int -> x + y}(1)(2) shouldBe 3
+        curry { x: String, y: String -> "$x, $y"}("hello")("world") shouldBe "hello, world"
+    }
+
+    "uncurry" {
+        uncurry<Int, Int, Int> { a -> { b -> a + b} }(1, 2) shouldBe 3
+        uncurry<String, String, String> { a -> { b -> "$a, $b"}  }("hello", "world") shouldBe "hello, world"
+    }
+
+    "compose" {
+        val f = { x: String -> x.toInt() }
+        val g = { x: Int -> x.toString() }
+        compose(f, g)(1) shouldBe 1
+    }
 })
