@@ -7,14 +7,16 @@ sealed class MyList<out A> {
             return if (aa.isEmpty()) Nil else Cons(aa[0], of(*tail))
         }
 
+        fun <A> empty(): MyList<A> = Nil
+
         fun sum(ints: MyList<Int>): Int = when (ints) {
             is Nil -> 0
             is Cons -> ints.head + sum(ints.tail)
         }
 
-        fun product(doubles: MyList<Double>): Double = when (doubles) {
-            is Nil -> 1.0
-            is Cons -> if (doubles.head == 0.0) 0.0 else doubles.head + product(doubles.tail)
+        fun product(ints: MyList<Int>): Int = when (ints) {
+            is Nil -> 1
+            is Cons -> if (ints.head == 0) 0 else ints.head * product(ints.tail)
         }
     }
 }
@@ -55,3 +57,15 @@ fun <A> init(xs: MyList<A>): MyList<A> = when (xs) {
         is Cons -> Cons(xs.head, init(xs.tail))
     }
 }
+
+fun <A, B> foldRight(xs: MyList<A>, z: B, f: (A, B) -> B): B = when (xs) {
+    is Nil -> z
+    is Cons -> f(xs.head, foldRight(xs.tail, z, f))
+}
+
+// exercise 3.6
+// Q: short-circuit foldRight?
+// A: No. evaluates to end of list
+
+// exercise 3.7
+// see test

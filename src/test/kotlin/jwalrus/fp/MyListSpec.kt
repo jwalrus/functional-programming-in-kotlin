@@ -1,6 +1,8 @@
 package jwalrus.fp
 
 import io.kotlintest.data.suspend.forall
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.assertAll
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import io.kotlintest.tables.row
@@ -55,5 +57,23 @@ class MyListSpec : StringSpec({
             row(MyList.of(1, 2, 3), MyList.of(1, 2)),
             row(MyList.of(1, 2, 3, 4), MyList.of(1, 2, 3))
         ) { xs, exp -> init(xs) shouldBe exp }
+    }
+
+    "sum with foldRight" {
+        assertAll { l: List<Int> ->
+            val xs = MyList.of(*l.toTypedArray())
+            MyList.sum(xs) shouldBe foldRight(xs, 0) {x, acc -> x + acc}
+        }
+    }
+
+    "product with foldRight" {
+        assertAll { l: List<Int> ->
+            val xs = MyList.of(*l.toTypedArray())
+            MyList.product(xs) shouldBe foldRight(xs, 1) {x, acc -> x * acc}
+        }
+    }
+
+    "exercise 3.7" {
+        foldRight(MyList.of(1, 2, 3), MyList.empty<Int>(), {x, acc -> Cons(x, acc)}) shouldBe MyList.of(1, 2, 3)
     }
 })
