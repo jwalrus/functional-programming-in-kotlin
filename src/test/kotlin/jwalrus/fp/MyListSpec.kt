@@ -76,4 +76,29 @@ class MyListSpec : StringSpec({
     "exercise 3.7" {
         foldRight(MyList.of(1, 2, 3), MyList.empty<Int>(), {x, acc -> Cons(x, acc)}) shouldBe MyList.of(1, 2, 3)
     }
+
+    "length" {
+        assertAll { l: List<Boolean> ->
+            val xs = MyList.of(*l.toTypedArray())
+            length(xs) shouldBe l.size
+        }
+    }
+
+    "foldLeft verified with foldRight" {
+        assertAll { l: List<Int> ->
+            val xs = MyList.of(*l.toTypedArray())
+            val left = foldLeft(xs, 1, {acc, x -> acc * x})
+            val right = foldRight(xs, 1, {x, acc -> x * acc})
+            left shouldBe right
+        }
+    }
+
+    "reverse" {
+        forall(
+            row(MyList.of(), MyList.of()),
+            row(MyList.of('a'), MyList.of('a')),
+            row(MyList.of('a', 'b'), MyList.of('b', 'a')),
+            row(MyList.of('a', 'b', 'c'), MyList.of('c', 'b', 'a'))
+        ) { xs, exp -> reverse(xs) shouldBe exp }
+    }
 })

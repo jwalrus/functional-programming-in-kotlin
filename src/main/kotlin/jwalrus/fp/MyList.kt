@@ -69,3 +69,20 @@ fun <A, B> foldRight(xs: MyList<A>, z: B, f: (A, B) -> B): B = when (xs) {
 
 // exercise 3.7
 // see test
+
+// exercise 3.8
+fun <A> length(xs: MyList<A>): Int = foldRight(xs, 0, {_, acc -> acc + 1})
+
+// exercise 3.9
+tailrec fun <A, B> foldLeft(xs: MyList<A>, z: B, f: (B, A) -> B): B = when (xs) {
+    is Nil -> z
+    is Cons -> foldLeft(xs.tail, f(z, xs.head), f)
+}
+
+// exercise 3.10
+fun sum(xs: MyList<Int>): Int = foldLeft(xs, 0, {acc, x -> acc + x})
+fun product(xs: MyList<Int>): Int = foldLeft(xs, 1, {acc, x -> acc + x})
+fun lengthL(xs: MyList<Int>): Int = foldLeft(xs, 0, {acc, _ -> acc + 1})
+
+// exercise 3.11
+fun <A> reverse(xs: MyList<A>): MyList<A> = foldLeft(xs, MyList.empty(), { acc, x -> Cons(x, acc)})
