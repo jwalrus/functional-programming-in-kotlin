@@ -101,4 +101,37 @@ class MyListSpec : StringSpec({
             row(MyList.of('a', 'b', 'c'), MyList.of('c', 'b', 'a'))
         ) { xs, exp -> reverse(xs) shouldBe exp }
     }
+
+    "foldLeft vs foldLeftR" {
+        assertAll { l: List<Int> ->
+            val xs = MyList.of(*l.toTypedArray())
+            val left = foldLeft(xs, 0, {acc, x -> acc + x})
+            val leftR = foldLeftR(xs, 0, {acc, x -> acc + x})
+            left shouldBe leftR
+        }
+    }
+
+    "foldRight vs foldRightL" {
+        assertAll { l: List<Int> ->
+            val xs = MyList.of(*l.toTypedArray())
+            val right = foldRight(xs, 0, {x, acc -> acc + x})
+            val rightL = foldRightL(xs, 0, {x, acc -> acc + x})
+            right shouldBe rightL
+        }
+    }
+
+    "append" {
+        forall(
+            row(MyList.of(), MyList.of(), MyList.of()),
+            row(MyList.of(), MyList.of(1), MyList.of(1)),
+            row(MyList.of(1), MyList.of(), MyList.of(1)),
+            row(MyList.of(1), MyList.of(1), MyList.of(1, 1)),
+            row(MyList.of(1, 2), MyList.of(3, 4), MyList.of(1, 2, 3, 4))
+        ) { a1, a2, exp -> append(a1, a2) shouldBe exp }
+    }
+
+    "concat" {
+        val aaa = MyList.of(MyList.of(1, 2), MyList.of(3, 4), MyList.of(5, 6))
+        concat(aaa) shouldBe MyList.of(1, 2, 3, 4, 5, 6)
+    }
 })

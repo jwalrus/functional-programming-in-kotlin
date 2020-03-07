@@ -86,3 +86,18 @@ fun lengthL(xs: MyList<Int>): Int = foldLeft(xs, 0, {acc, _ -> acc + 1})
 
 // exercise 3.11
 fun <A> reverse(xs: MyList<A>): MyList<A> = foldLeft(xs, MyList.empty(), { acc, x -> Cons(x, acc)})
+
+// exercise 3.12
+fun <A, B> foldLeftR(xs: MyList<A>, z: B, f: (B, A) -> B): B =
+    foldRight(xs, {b: B -> b}, { a, g -> { b -> g(f(b, a)) } })(z)
+
+fun <A, B> foldRightL(xs: MyList<A>, z: B, f: (A, B) -> B): B =
+    foldLeft(xs, {b: B -> b}, {g, a -> { b -> g(f(a, b)) } })(z)
+
+// exercise 3.13
+fun <A> append(a1: MyList<A>, a2: MyList<A>): MyList<A> =
+    foldRight(a1, a2, { a, acc -> Cons(a, acc)})
+
+// exercise 3.14
+fun <A> concat(aaa: MyList<MyList<A>>): MyList<A> =
+    foldRight(aaa, MyList.empty()) { a, acc -> append(a, acc) }
