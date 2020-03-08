@@ -143,7 +143,7 @@ fun zipInts(x1: MyList<Int>, x2: MyList<Int>): MyList<Int> =
     }
 
 // exercise 3.22
-fun <A> zipWith(x1: MyList<A>, x2: MyList<A>, f: (A, A) -> A): MyList<A> =
+fun <A, B> zipWith(x1: MyList<A>, x2: MyList<A>, f: (A, A) -> B): MyList<B> =
     when (x1) {
         is Nil -> Nil
         is Cons -> when (x2) {
@@ -151,3 +151,20 @@ fun <A> zipWith(x1: MyList<A>, x2: MyList<A>, f: (A, A) -> A): MyList<A> =
             is Cons -> Cons(f(x1.head, x2.head), zipWith(x1.tail, x2.tail, f))
         }
     }
+
+// exercise 3.23
+tailrec fun <A> hasSubsequence(xs: MyList<A>, sub: MyList<A>): Boolean {
+    fun <A> equalSub(l1: MyList<A>): Boolean {
+        val bools = zipWith(l1, sub) { a, b -> a == b}
+        return length(bools) == length(sub) && foldRight(bools, true) { b, acc -> b && acc }
+    }
+
+    return when (sub) {
+        is Nil -> false
+        is Cons -> when (xs) {
+            is Nil -> false
+            is Cons -> if (xs.head == sub.head && equalSub(xs)) true
+                       else hasSubsequence(xs.tail, sub)
+        }
+    }
+}

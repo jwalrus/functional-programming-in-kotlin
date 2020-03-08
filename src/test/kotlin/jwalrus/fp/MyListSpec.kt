@@ -185,4 +185,16 @@ class MyListSpec : StringSpec({
         zipInts(x1, x2) shouldBe MyList.of(5, 7, 9)
         zipWith(x1, x2) { a,b -> a + b } shouldBe zipInts(x1, x2)
     }
+
+    "hasSubsequence" {
+        forall(
+            row(MyList.of(), MyList.of(), false),
+            row(MyList.of(), MyList.of(1), false),
+            row(MyList.of(1), MyList.of(2), false),
+            row(MyList.of(1, 2), MyList.of(2), true),
+            row(MyList.of(1, 2, 3), MyList.of(2, 3), true),
+            row(MyList.of(1, 2, 3, 4), MyList.of(2, 3), true),
+            row(MyList.of(1, 2, 3, 4), MyList.of(2, 3, 2), false)
+        ) { xs, sub, exp -> hasSubsequence(xs, sub) shouldBe exp }
+    }
 })
