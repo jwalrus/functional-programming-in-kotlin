@@ -134,4 +134,48 @@ class MyListSpec : StringSpec({
         val aaa = MyList.of(MyList.of(1, 2), MyList.of(3, 4), MyList.of(5, 6))
         concat(aaa) shouldBe MyList.of(1, 2, 3, 4, 5, 6)
     }
+
+    "increment" {
+        forall(
+            row(MyList.of(), MyList.of()),
+            row(MyList.of(1), MyList.of(2)),
+            row(MyList.of(1, 2), MyList.of(2, 3))
+        ) { xs, exp -> increment(xs) shouldBe exp }
+    }
+
+    "double2string" {
+        forall(
+            row(MyList.of(), MyList.of()),
+            row(MyList.of(1.0), MyList.of("1.0")),
+            row(MyList.of(1.0, 1.1), MyList.of("1.0", "1.1"))
+        ) { xs, exp -> double2string(xs) shouldBe exp }
+    }
+
+    "map" {
+        assertAll { l: List<Int> ->
+            val xs = MyList.of(*l.toTypedArray())
+            map(xs) { it + 1 } shouldBe increment(xs)
+        }
+
+        assertAll { d: List<Double> ->
+            val xs = MyList.of(*d.toTypedArray())
+            map(xs) { it.toString() } shouldBe double2string(xs)
+        }
+    }
+
+    "filter" {
+        forall(
+            row(MyList.of(), { x: Int -> x % 2 == 0 }, MyList.of()),
+            row(MyList.of(1), { x: Int -> x % 2 == 0 }, MyList.of()),
+            row(MyList.of(1, 2), { x: Int -> x % 2 == 0 }, MyList.of(2)),
+            row(MyList.of(2, 4, 6), { x: Int -> x % 2 == 0 }, MyList.of(2, 4, 6))
+        ) { xs, p, exp ->
+            filter(xs, p) shouldBe exp
+            filterFlatMap(xs, p) shouldBe filter(xs, p)
+        }
+    }
+
+    "flatMap" {
+        flatMap(MyList.of(1, 2, 3)) { i -> MyList.of(i, i) } shouldBe MyList.of(1, 1, 2, 2, 3, 3)
+    }
 })

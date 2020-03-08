@@ -100,4 +100,34 @@ fun <A> append(a1: MyList<A>, a2: MyList<A>): MyList<A> =
 
 // exercise 3.14
 fun <A> concat(aaa: MyList<MyList<A>>): MyList<A> =
-    foldRight(aaa, MyList.empty()) { a, acc -> append(a, acc) }
+    foldRightL(aaa, MyList.empty()) { a, acc -> append(a, acc) }
+
+// exercise 3.15
+fun increment(xs: MyList<Int>): MyList<Int> =
+    foldRightL(xs, MyList.empty(), {a, acc -> Cons(a + 1, acc)})
+
+// exercise 3.16
+fun double2string(xs: MyList<Double>): MyList<String> =
+    foldRight(xs, MyList.empty(), {a, acc -> Cons(a.toString(), acc)})
+
+// exercise 3.17
+fun <A, B> map(xs: MyList<A>, f: (A) -> B): MyList<B> =
+    foldRightL(xs, MyList.empty(), {a, acc -> Cons(f(a), acc)})
+
+// exercise 3.18
+fun <A> filter(xs: MyList<A>, p: (A) -> Boolean): MyList<A> =
+    foldRightL(xs, MyList.empty(), {a, acc -> if (p(a)) Cons(a, acc) else acc})
+
+// exercise 3.19
+fun <A, B> flatMap(xa: MyList<A>, f: (A) -> MyList<B>): MyList<B> = concat(map(xa, f))
+/*
+// probably better to use
+fun<A, B> flatMap(xa: MyList<A>, f: (A) -> MyList<B>): MyList<B> =
+    foldRight(xa, MyList.empty(), { a, acc ->
+        foldRight(f(a), acc, { b, accb -> Cons(b, accb) })
+    })
+*/
+
+// exercise 3.20
+fun <A> filterFlatMap(xs: MyList<A>, p: (A) -> Boolean): MyList<A> =
+    flatMap(xs) { if (p(it)) MyList.of(it) else MyList.empty() }
