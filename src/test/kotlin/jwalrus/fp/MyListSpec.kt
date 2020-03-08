@@ -178,4 +178,11 @@ class MyListSpec : StringSpec({
     "flatMap" {
         flatMap(MyList.of(1, 2, 3)) { i -> MyList.of(i, i) } shouldBe MyList.of(1, 1, 2, 2, 3, 3)
     }
+
+    "zipInts and zipWith" {
+        val x1 = MyList.of(1, 2, 3)
+        val x2 = MyList.of(4, 5, 6, 7)
+        zipInts(x1, x2) shouldBe MyList.of(5, 7, 9)
+        zipWith(x1, x2) { a,b -> a + b } shouldBe zipInts(x1, x2)
+    }
 })

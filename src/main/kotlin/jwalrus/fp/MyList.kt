@@ -131,3 +131,23 @@ fun<A, B> flatMap(xa: MyList<A>, f: (A) -> MyList<B>): MyList<B> =
 // exercise 3.20
 fun <A> filterFlatMap(xs: MyList<A>, p: (A) -> Boolean): MyList<A> =
     flatMap(xs) { if (p(it)) MyList.of(it) else MyList.empty() }
+
+// exercise 3.21
+fun zipInts(x1: MyList<Int>, x2: MyList<Int>): MyList<Int> =
+    when (x1) {
+        is Nil -> Nil
+        is Cons -> when (x2) {
+            is Nil -> Nil
+            is Cons -> Cons(x1.head + x2.head, zipInts(x1.tail, x2.tail))
+        }
+    }
+
+// exercise 3.22
+fun <A> zipWith(x1: MyList<A>, x2: MyList<A>, f: (A, A) -> A): MyList<A> =
+    when (x1) {
+        is Nil -> Nil
+        is Cons -> when (x2) {
+            is Nil -> Nil
+            is Cons -> Cons(f(x1.head, x2.head), zipWith(x1.tail, x2.tail, f))
+        }
+    }
