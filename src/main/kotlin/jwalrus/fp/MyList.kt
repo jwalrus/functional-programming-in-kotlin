@@ -154,16 +154,19 @@ fun <A, B> zipWith(x1: MyList<A>, x2: MyList<A>, f: (A, A) -> B): MyList<B> =
 
 // exercise 3.23
 tailrec fun <A> hasSubsequence(xs: MyList<A>, sub: MyList<A>): Boolean {
-    fun <A> equalSub(l1: MyList<A>): Boolean {
-        val bools = zipWith(l1, sub) { a, b -> a == b}
-        return length(bools) == length(sub) && foldRight(bools, true) { b, acc -> b && acc }
+    fun <A> go(l1: MyList<A>, l2: MyList<A>): Boolean = when(l1) {
+        is Nil -> l2 == Nil
+        is Cons -> when(l2) {
+            is Nil -> true
+            is Cons -> if (l1.head == l2.head) go(l1.tail, l2.tail) else false
+        }
     }
 
     return when (sub) {
         is Nil -> false
         is Cons -> when (xs) {
             is Nil -> false
-            is Cons -> if (xs.head == sub.head && equalSub(xs)) true
+            is Cons -> if (go(xs, sub)) true
                        else hasSubsequence(xs.tail, sub)
         }
     }
