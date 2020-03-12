@@ -1,0 +1,53 @@
+package jwalrus.fp
+
+import io.kotlintest.data.suspend.forall
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
+import io.kotlintest.tables.row
+
+class OptionSpec : StringSpec({
+
+    "map" {
+        forall(
+            row(None, None),
+            row(Some(1), Some(2))
+        ) { o: Option<Int>, exp: Option<Int> -> o.map { a -> a * 2 } shouldBe exp }
+    }
+
+    "flatMap" {
+        forall(
+            row(None, None),
+            row(Some(1), Some(2))
+        ) { o: Option<Int>, exp: Option<Int> ->
+            o.flatMap { a -> Some(a + 1) } shouldBe exp
+        }
+    }
+
+    "getOrElse" {
+        forall(
+            row(None, 1),
+            row(Some(2), 2)
+        ) { o: Option<Int>, exp: Int ->
+            o.getOrElse { 1 } shouldBe exp
+        }
+    }
+
+    "orElse" {
+        forall(
+            row(None, Some(1)),
+            row(Some(2), Some(2))
+        ) { o: Option<Int>, exp: Option<Int> ->
+            o.orElse { Some(1) } shouldBe exp
+        }
+    }
+
+    "filter" {
+        forall(
+            row(None, None),
+            row(Some(1), None),
+            row(Some(2), Some(2))
+        ) { o: Option<Int>, exp: Option<Int> ->
+            o.filter { a -> a % 2 == 0 } shouldBe exp
+        }
+    }
+})
