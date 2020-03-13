@@ -1,5 +1,7 @@
 package jwalrus.fp
 
+import kotlin.math.pow
+
 sealed class Option<out A>
 
 object None : Option<Nothing>()
@@ -23,3 +25,10 @@ fun <A> Option<A>.orElse(ob: () -> Option<A>): Option<A> = this.map { Some(it) }
 
 fun <A> Option<A>.filter(f: (A) -> Boolean): Option<A> = this.flatMap { if (f(it)) Some(it) else None }
 
+
+// exercise 4.2
+fun mean(xs: List<Double>): Option<Double> =
+    if (xs.isEmpty()) None
+    else Some(xs.sum() / xs.size)
+
+fun variance(xs: List<Double>): Option<Double> = mean(xs).flatMap { mu -> mean(xs.map { (it - mu).pow(2) })  }

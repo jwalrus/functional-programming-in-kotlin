@@ -50,4 +50,14 @@ class OptionSpec : StringSpec({
             o.filter { a -> a % 2 == 0 } shouldBe exp
         }
     }
+
+    "variance" {
+        forall(
+            row(listOf(), None),
+            row(listOf(1.0), Some(0.0)),
+            row(listOf(1.0, 3.0), Some(1.0))
+        ) { xs: List<Double>, exp: Option<Double> ->
+            variance(xs) shouldBe exp
+        }
+    }
 })
