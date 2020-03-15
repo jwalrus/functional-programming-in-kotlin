@@ -69,4 +69,13 @@ class OptionSpec : StringSpec({
             row(Some(2), Some(3), Some(6))
         ) { a, b, exp -> map2(a, b){ x, y -> x * y } shouldBe exp }
     }
+
+    "sequence" {
+        forall(
+            row(MyList.of(None), None),
+            row(MyList.of(Some(1), None), None),
+            row(MyList.of(Some(1)), Some(MyList.of(1))),
+            row(MyList.of(Some(1), Some(2)), Some(MyList.of(1, 2)))
+        ) { listOfOps, opOfList -> sequence(listOfOps) shouldBe opOfList }
+    }
 })
