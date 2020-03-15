@@ -60,4 +60,13 @@ class OptionSpec : StringSpec({
             variance(xs) shouldBe exp
         }
     }
+
+    "map2" {
+        forall(
+            row(None, None, None),
+            row(None, Some(1), None),
+            row(Some(1), None, None),
+            row(Some(2), Some(3), Some(6))
+        ) { a, b, exp -> map2(a, b){ x, y -> x * y } shouldBe exp }
+    }
 })

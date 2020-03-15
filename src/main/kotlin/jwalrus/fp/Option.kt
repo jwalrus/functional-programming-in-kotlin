@@ -25,6 +25,16 @@ fun <A> Option<A>.orElse(ob: () -> Option<A>): Option<A> = this.map { Some(it) }
 
 fun <A> Option<A>.filter(f: (A) -> Boolean): Option<A> = this.flatMap { if (f(it)) Some(it) else None }
 
+fun <A, B> lift(f: (A) -> B): (Option<A>) -> Option<B> = { oa -> oa.map(f) }
+
+fun <A> catches(a: () -> A): Option<A> =
+    try {
+        Some(a())
+    } catch (_: Throwable) {
+        None
+    }
+
+
 
 // exercise 4.2
 fun mean(xs: List<Double>): Option<Double> =
@@ -32,3 +42,6 @@ fun mean(xs: List<Double>): Option<Double> =
     else Some(xs.sum() / xs.size)
 
 fun variance(xs: List<Double>): Option<Double> = mean(xs).flatMap { mu -> mean(xs.map { (it - mu).pow(2) })  }
+
+// exercise 4.3
+fun <A, B, C> map2(oa: Option<A>, ob: Option<B>, f: (A, B) -> C): Option<C> = oa.flatMap { a -> ob.map { b -> f(a, b) } }
