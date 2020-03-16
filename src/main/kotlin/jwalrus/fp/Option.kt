@@ -47,7 +47,15 @@ fun variance(xs: List<Double>): Option<Double> = mean(xs).flatMap { mu -> mean(x
 fun <A, B, C> map2(oa: Option<A>, ob: Option<B>, f: (A, B) -> C): Option<C> = oa.flatMap { a -> ob.map { b -> f(a, b) } }
 
 // exercise 4.4
-fun <A> sequence(xs: MyList<Option<A>>): Option<MyList<A>> =
-    foldRightL(xs, Some(MyList.empty<A>())) { oa: Option<A>, acc: Option<MyList<A>> ->
-        map2(oa, acc) { a, b -> Cons(a, b) }
+fun <A> sequence(xs: MyList<Option<A>>): Option<MyList<A>> = traverse(xs) { it }
+// first implementation:
+//    foldRightL(xs, Some(MyList.empty<A>())) { oa: Option<A>, acc: Option<MyList<A>> ->
+//        map2(oa, acc) { a, b -> Cons(a, b) }
+//    }
+
+// exercise 4.5
+fun <A, B> traverse(xa: MyList<A>, f: (A) -> Option<B>): Option<MyList<B>> =
+    when (xa) {
+        is Nil -> Some(Nil)
+        is Cons -> map2(f(xa.head), traverse(xa.tail, f)) { a, acc -> Cons(a, acc) }
     }

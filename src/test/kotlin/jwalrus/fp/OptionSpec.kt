@@ -78,4 +78,16 @@ class OptionSpec : StringSpec({
             row(MyList.of(Some(1), Some(2)), Some(MyList.of(1, 2)))
         ) { listOfOps, opOfList -> sequence(listOfOps) shouldBe opOfList }
     }
+
+    "traverse" {
+        forall(
+            row(MyList.empty(), Some(MyList.empty())),
+            row(MyList.of(100), Some(MyList.of(1.0))),
+            row(MyList.of(100, 50), Some(MyList.of(1.0, 2.0))),
+            row(MyList.of(100, 0), None),
+            row(MyList.of(0, 100), None)
+        ) { xa: MyList<Int>, exp: Option<MyList<Double>> ->
+            traverse(xa) { a -> if (a == 0) None else Some(100.0 / a) } shouldBe exp
+        }
+    }
 })
