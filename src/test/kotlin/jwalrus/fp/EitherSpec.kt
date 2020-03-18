@@ -39,4 +39,26 @@ class EitherSpec : StringSpec({
             row(Right(1), Right(1), Right(2))
         ) { ea, eb, exp -> map2(ea, eb) { a, b -> a + b } shouldBe exp }
     }
+
+    "sequence" {
+        forall(
+            row(MyList.of(Left("nothing")), Left("nothing")),
+            row(MyList.of(Right(1), Left("nothing")), Left("nothing")),
+            row(MyList.of(Right(1), Left("nothing"), Left("nada")), Left("nothing")),
+            row(MyList.of(Right(1)), Right(MyList.of(1))),
+            row(MyList.of(Right(1), Right(2)), Right(MyList.of(1, 2)))
+        ) { lea, exp -> sequence(lea) shouldBe exp }
+    }
+
+    "traverse" {
+        forall(
+            row(MyList.empty(), Right(MyList.empty())),
+            row(MyList.of(100), Right(MyList.of(1.0))),
+            row(MyList.of(100, 50), Right(MyList.of(1.0, 2.0))),
+            row(MyList.of(100, 0), Left("zero")),
+            row(MyList.of(0, 100), Left("zero"))
+        ) { xa: MyList<Int>, exp: Either<String, MyList<Double>> ->
+            traversee(xa) { a -> if (a == 0) Left("zero") else Right(100.0 / a) } shouldBe exp
+        }
+    }
 })

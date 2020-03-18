@@ -28,3 +28,12 @@ fun <E, A, B, C> map2(ae: Either<E, A>, be: Either<E, B>, f: (A, B) -> C): Eithe
             f(a, b)
         }
     }
+
+// exercise 4.7
+fun <E, A, B> traversee(xa: MyList<A>, f: (A) -> Either<E, B>): Either<E, MyList<B>> =
+    when (xa) {
+        is Nil -> Right(Nil)
+        is Cons -> map2(f(xa.head), traversee(xa.tail, f)) { a, acc -> Cons(a, acc) }
+    }
+
+fun <E, A> sequence(xa: MyList<Either<E, A>>): Either<E, MyList<A>> = traversee(xa) { it }
