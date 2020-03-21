@@ -1,56 +1,56 @@
 package jwalrus.fp
 
-sealed class MyList<out A> {
+sealed class List<out A> {
     companion object {
-        fun <A> of(vararg aa: A): MyList<A> {
+        fun <A> of(vararg aa: A): List<A> {
             val tail = aa.sliceArray(1 until aa.size)
             return if (aa.isEmpty()) Nil else Cons(aa[0], of(*tail))
         }
 
-        fun <A> empty(): MyList<A> = Nil
+        fun <A> empty(): List<A> = Nil
 
-        fun sum(ints: MyList<Int>): Int = when (ints) {
+        fun sum(ints: List<Int>): Int = when (ints) {
             is Nil -> 0
             is Cons -> ints.head + sum(ints.tail)
         }
 
-        fun product(ints: MyList<Int>): Int = when (ints) {
+        fun product(ints: List<Int>): Int = when (ints) {
             is Nil -> 1
             is Cons -> if (ints.head == 0) 0 else ints.head * product(ints.tail)
         }
     }
 }
 
-object Nil: MyList<Nothing>()
+object Nil: List<Nothing>()
 
-data class Cons<out A>(val head: A, val tail: MyList<A>): MyList<A>()
+data class Cons<out A>(val head: A, val tail: List<A>): List<A>()
 
 // exercise 3.1
-fun <A> tail(xs: MyList<A>): MyList<A> = when (xs) {
+fun <A> tail(xs: List<A>): List<A> = when (xs) {
     is Nil -> Nil
     is Cons -> xs.tail
 }
 
 // exercise 3.2
-fun <A> setHead(xs: MyList<A>, x: A): MyList<A> = when (xs) {
+fun <A> setHead(xs: List<A>, x: A): List<A> = when (xs) {
     is Nil -> Cons(x, Nil)
     is Cons -> Cons(x, xs.tail)
 }
 
 // exercise 3.3
-fun <A> drop(xs: MyList<A>, n: Int): MyList<A> = when (xs) {
+fun <A> drop(xs: List<A>, n: Int): List<A> = when (xs) {
     is Nil -> Nil
     is Cons -> if (n == 0) xs else drop(xs.tail, n - 1)
 }
 
 // exercise 3.4
-fun <A> dropWhile(xs: MyList<A>, p: (A) -> Boolean): MyList<A> = when (xs) {
+fun <A> dropWhile(xs: List<A>, p: (A) -> Boolean): List<A> = when (xs) {
     is Nil -> Nil
     is Cons -> if (p(xs.head)) dropWhile(xs.tail, p) else xs
 }
 
 // exercise 3.5
-fun <A> init(xs: MyList<A>): MyList<A> = when (xs) {
+fun <A> init(xs: List<A>): List<A> = when (xs) {
     is Nil -> Nil
     is Cons -> when (xs.tail) {
         is Nil -> Nil
@@ -58,7 +58,7 @@ fun <A> init(xs: MyList<A>): MyList<A> = when (xs) {
     }
 }
 
-fun <A, B> foldRight(xs: MyList<A>, z: B, f: (A, B) -> B): B = when (xs) {
+fun <A, B> foldRight(xs: List<A>, z: B, f: (A, B) -> B): B = when (xs) {
     is Nil -> z
     is Cons -> f(xs.head, foldRight(xs.tail, z, f))
 }
@@ -71,55 +71,55 @@ fun <A, B> foldRight(xs: MyList<A>, z: B, f: (A, B) -> B): B = when (xs) {
 // see test
 
 // exercise 3.8
-fun <A> length(xs: MyList<A>): Int = foldRight(xs, 0, {_, acc -> acc + 1})
+fun <A> length(xs: List<A>): Int = foldRight(xs, 0, { _, acc -> acc + 1})
 
 // exercise 3.9
-tailrec fun <A, B> foldLeft(xs: MyList<A>, z: B, f: (B, A) -> B): B = when (xs) {
+tailrec fun <A, B> foldLeft(xs: List<A>, z: B, f: (B, A) -> B): B = when (xs) {
     is Nil -> z
     is Cons -> foldLeft(xs.tail, f(z, xs.head), f)
 }
 
 // exercise 3.10
-fun sum(xs: MyList<Int>): Int = foldLeft(xs, 0, {acc, x -> acc + x})
-fun product(xs: MyList<Int>): Int = foldLeft(xs, 1, {acc, x -> acc + x})
-fun lengthL(xs: MyList<Int>): Int = foldLeft(xs, 0, {acc, _ -> acc + 1})
+fun sum(xs: List<Int>): Int = foldLeft(xs, 0, { acc, x -> acc + x})
+fun product(xs: List<Int>): Int = foldLeft(xs, 1, { acc, x -> acc + x})
+fun lengthL(xs: List<Int>): Int = foldLeft(xs, 0, { acc, _ -> acc + 1})
 
 // exercise 3.11
-fun <A> reverse(xs: MyList<A>): MyList<A> = foldLeft(xs, MyList.empty(), { acc, x -> Cons(x, acc)})
+fun <A> reverse(xs: List<A>): List<A> = foldLeft(xs, List.empty(), { acc, x -> Cons(x, acc)})
 
 // exercise 3.12
-fun <A, B> foldLeftR(xs: MyList<A>, z: B, f: (B, A) -> B): B =
+fun <A, B> foldLeftR(xs: List<A>, z: B, f: (B, A) -> B): B =
     foldRight(xs, {b: B -> b}, { a, g -> { b -> g(f(b, a)) } })(z)
 
-fun <A, B> foldRightL(xs: MyList<A>, z: B, f: (A, B) -> B): B =
+fun <A, B> foldRightL(xs: List<A>, z: B, f: (A, B) -> B): B =
     foldLeft(xs, {b: B -> b}, {g, a -> { b -> g(f(a, b)) } })(z)
 
 // exercise 3.13
-fun <A> append(a1: MyList<A>, a2: MyList<A>): MyList<A> =
+fun <A> append(a1: List<A>, a2: List<A>): List<A> =
     foldRight(a1, a2, { a, acc -> Cons(a, acc)})
 
 // exercise 3.14
-fun <A> concat(aaa: MyList<MyList<A>>): MyList<A> =
-    foldRightL(aaa, MyList.empty()) { a, acc -> append(a, acc) }
+fun <A> concat(aaa: List<List<A>>): List<A> =
+    foldRightL(aaa, List.empty()) { a, acc -> append(a, acc) }
 
 // exercise 3.15
-fun increment(xs: MyList<Int>): MyList<Int> =
-    foldRightL(xs, MyList.empty(), {a, acc -> Cons(a + 1, acc)})
+fun increment(xs: List<Int>): List<Int> =
+    foldRightL(xs, List.empty(), { a, acc -> Cons(a + 1, acc)})
 
 // exercise 3.16
-fun double2string(xs: MyList<Double>): MyList<String> =
-    foldRight(xs, MyList.empty(), {a, acc -> Cons(a.toString(), acc)})
+fun double2string(xs: List<Double>): List<String> =
+    foldRight(xs, List.empty(), { a, acc -> Cons(a.toString(), acc)})
 
 // exercise 3.17
-fun <A, B> map(xs: MyList<A>, f: (A) -> B): MyList<B> =
-    foldRightL(xs, MyList.empty(), {a, acc -> Cons(f(a), acc)})
+fun <A, B> map(xs: List<A>, f: (A) -> B): List<B> =
+    foldRightL(xs, List.empty(), { a, acc -> Cons(f(a), acc)})
 
 // exercise 3.18
-fun <A> filter(xs: MyList<A>, p: (A) -> Boolean): MyList<A> =
-    foldRightL(xs, MyList.empty(), {a, acc -> if (p(a)) Cons(a, acc) else acc})
+fun <A> filter(xs: List<A>, p: (A) -> Boolean): List<A> =
+    foldRightL(xs, List.empty(), { a, acc -> if (p(a)) Cons(a, acc) else acc})
 
 // exercise 3.19
-fun <A, B> flatMap(xa: MyList<A>, f: (A) -> MyList<B>): MyList<B> = concat(map(xa, f))
+fun <A, B> flatMap(xa: List<A>, f: (A) -> List<B>): List<B> = concat(map(xa, f))
 /*
 // probably better to use
 fun<A, B> flatMap(xa: MyList<A>, f: (A) -> MyList<B>): MyList<B> =
@@ -129,11 +129,11 @@ fun<A, B> flatMap(xa: MyList<A>, f: (A) -> MyList<B>): MyList<B> =
 */
 
 // exercise 3.20
-fun <A> filterFlatMap(xs: MyList<A>, p: (A) -> Boolean): MyList<A> =
-    flatMap(xs) { if (p(it)) MyList.of(it) else MyList.empty() }
+fun <A> filterFlatMap(xs: List<A>, p: (A) -> Boolean): List<A> =
+    flatMap(xs) { if (p(it)) List.of(it) else List.empty() }
 
 // exercise 3.21
-fun zipInts(x1: MyList<Int>, x2: MyList<Int>): MyList<Int> =
+fun zipInts(x1: List<Int>, x2: List<Int>): List<Int> =
     when (x1) {
         is Nil -> Nil
         is Cons -> when (x2) {
@@ -143,7 +143,7 @@ fun zipInts(x1: MyList<Int>, x2: MyList<Int>): MyList<Int> =
     }
 
 // exercise 3.22
-fun <A, B> zipWith(x1: MyList<A>, x2: MyList<A>, f: (A, A) -> B): MyList<B> =
+fun <A, B> zipWith(x1: List<A>, x2: List<A>, f: (A, A) -> B): List<B> =
     when (x1) {
         is Nil -> Nil
         is Cons -> when (x2) {
@@ -153,8 +153,8 @@ fun <A, B> zipWith(x1: MyList<A>, x2: MyList<A>, f: (A, A) -> B): MyList<B> =
     }
 
 // exercise 3.23
-tailrec fun <A> hasSubsequence(xs: MyList<A>, sub: MyList<A>): Boolean {
-    fun <A> go(l1: MyList<A>, l2: MyList<A>): Boolean = when(l1) {
+tailrec fun <A> hasSubsequence(xs: List<A>, sub: List<A>): Boolean {
+    fun <A> go(l1: List<A>, l2: List<A>): Boolean = when(l1) {
         is Nil -> l2 == Nil
         is Cons -> when(l2) {
             is Nil -> true

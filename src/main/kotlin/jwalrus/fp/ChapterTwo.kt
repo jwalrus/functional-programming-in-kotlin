@@ -1,5 +1,7 @@
 package jwalrus.fp
 
+import kotlin.collections.List
+
 // exercise 2.1
 // returns the nth number in the fibonacci series
 fun fibonacci(n: Int): Long {

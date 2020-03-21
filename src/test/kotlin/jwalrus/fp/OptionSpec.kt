@@ -56,7 +56,7 @@ class OptionSpec : StringSpec({
             row(listOf(), None),
             row(listOf(1.0), Some(0.0)),
             row(listOf(1.0, 3.0), Some(1.0))
-        ) { xs: List<Double>, exp: Option<Double> ->
+        ) { xs: kotlin.collections.List<Double>, exp: Option<Double> ->
             variance(xs) shouldBe exp
         }
     }
@@ -72,21 +72,21 @@ class OptionSpec : StringSpec({
 
     "sequence" {
         forall(
-            row(MyList.of(None), None),
-            row(MyList.of(Some(1), None), None),
-            row(MyList.of(Some(1)), Some(MyList.of(1))),
-            row(MyList.of(Some(1), Some(2)), Some(MyList.of(1, 2)))
+            row(List.of(None), None),
+            row(List.of(Some(1), None), None),
+            row(List.of(Some(1)), Some(List.of(1))),
+            row(List.of(Some(1), Some(2)), Some(List.of(1, 2)))
         ) { listOfOps, opOfList -> sequence(listOfOps) shouldBe opOfList }
     }
 
     "traverse" {
         forall(
-            row(MyList.empty(), Some(MyList.empty())),
-            row(MyList.of(100), Some(MyList.of(1.0))),
-            row(MyList.of(100, 50), Some(MyList.of(1.0, 2.0))),
-            row(MyList.of(100, 0), None),
-            row(MyList.of(0, 100), None)
-        ) { xa: MyList<Int>, exp: Option<MyList<Double>> ->
+            row(List.empty(), Some(List.empty())),
+            row(List.of(100), Some(List.of(1.0))),
+            row(List.of(100, 50), Some(List.of(1.0, 2.0))),
+            row(List.of(100, 0), None),
+            row(List.of(0, 100), None)
+        ) { xa: List<Int>, exp: Option<List<Double>> ->
             traverse(xa) { a -> if (a == 0) None else Some(100.0 / a) } shouldBe exp
         }
     }
