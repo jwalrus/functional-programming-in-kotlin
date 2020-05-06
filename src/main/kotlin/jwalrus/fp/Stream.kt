@@ -23,9 +23,17 @@ sealed class Stream<out A> {
 data class Kons<out A>(val h: () -> A, val t: () -> Stream<A>) : Stream<A>()
 object Empty : Stream<Nothing>()
 
-fun <A> Stream<A>.headOption() : Option<A> = when (this) {
+fun <A> Stream<A>.headOption0() : Option<A> = when (this) {
     is Empty -> None
     is Kons -> Some(h())
+}
+
+fun <A> Stream<A>.headOption(): Option<A> = TODO()
+
+
+fun <A, B> Stream<A>.foldRight(z: () -> B, f: (A, () -> B) -> B): B = when (this) {
+    is Kons -> f(this.h()) { t().foldRight(z, f) }
+    else -> z()
 }
 
 // exercise 5.1
@@ -60,15 +68,20 @@ fun <A> Stream<A>.drop(n: Int): Stream<A> {
 }
 
 // exercise 5.3
-fun <A> Stream<A>.takeWhile(p: (A) -> Boolean): Stream<A> = when (this) {
+fun <A> Stream<A>.takeWhile0(p: (A) -> Boolean): Stream<A> = when (this) {
     is Empty -> empty()
     is Kons ->
-        if (p(this.h())) kons(this.h, { this.t().takeWhile(p) })
+        if (p(this.h())) kons(this.h, { this.t().takeWhile0(p) })
         else empty()
 }
 
+// exercise 5.5
+fun <A> Stream<A>.takeWhile(p: (A) -> Boolean): Stream<A>
+    = foldRight({ empty() }) { a, b -> if (p(a)) kons({ a }, b) else b() }
 
-fun <A, B> Stream<A>.foldRight(z: () -> B, f: (A, () -> B) -> B): B = when (this) {
-    is Kons -> f(this.h()) { t().foldRight(z, f) }
-    else -> z()
-}
+// exercise 5.4
+fun <A> Stream<A>.exists(p: (A) -> Boolean): Boolean = foldRight({ false }) { a, b -> p(a) || b() }
+
+fun <A> Stream<A>.forAll(p: (A) -> Boolean): Boolean = foldRight({ true }) { a, b -> p(a) && b() }
+
+// exercise 5.5
