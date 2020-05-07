@@ -2,7 +2,11 @@ package jwalrus.fp
 
 import kotlin.math.pow
 
-sealed class Option<out A>
+sealed class Option<out A> {
+    companion object {
+        fun <A> empty(): Option<A> = None
+    }
+}
 
 object None : Option<Nothing>()
 
