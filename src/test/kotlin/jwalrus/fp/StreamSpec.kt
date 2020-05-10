@@ -11,6 +11,7 @@ class StreamSpec : ShouldSpec ({
 
     should("take the first 2 elements of 1,2,3") {
         Stream.of(1, 2, 3).take(2).toList() shouldBe List.of(1, 2)
+        Stream.of(1, 2, 3).take_(2).toList() shouldBe List.of(1, 2)
     }
 
     should("drop the first 2 elements of 1,2,3") {
@@ -20,6 +21,7 @@ class StreamSpec : ShouldSpec ({
     should("takeWhile numbers are less than 3") {
         Stream.of(1, 2, 3).takeWhile0 { it < 3 }.toList() shouldBe List.of(1, 2)
         Stream.of(1, 2, 3).takeWhile { it < 3 }.toList() shouldBe List.of(1, 2)
+        Stream.of(1, 2, 3).takeWhile_ { it < 3 }.toList() shouldBe List.of(1, 2)
     }
 
     should("be true because 2 exists is in 1,2,3") {
@@ -82,5 +84,25 @@ class StreamSpec : ShouldSpec ({
 
     should("generate a stream of ones") {
         ones_().take(3).toList() shouldBe List.of(1, 1, 1)
+    }
+
+    should("zip two strings by adding components") {
+        val xs = Stream.of(1, 2, 3, 4)
+        val ys = ones_().take(3)
+        xs.zipWith(ys) { x, y -> x + y}.toList() shouldBe List.of(2, 3, 4)
+    }
+
+    should("return true when stream starts with other stream") {
+        Stream.of(1, 2, 3).startsWith(Stream.of(1, 2)) shouldBe true
+    }
+
+    should("return false when stream does not start with other stream") {
+        Stream.of(1, 2).startsWith(Stream.of(1, 2, 3)) shouldBe false
+    }
+
+    should("return tails of sequence") {
+        val actual = Stream.of(1, 2, 3).tails().map { it.toList() }.toList()
+        val expected = List.of(List.of(1, 2, 3), List.of(2, 3), List.of(3))
+        actual shouldBe expected
     }
 })

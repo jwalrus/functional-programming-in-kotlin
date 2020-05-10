@@ -129,3 +129,60 @@ fun <A, B> Stream<A>.map_(f: (A) -> B): Stream<B>
             is Kons -> Some(Pair(f(xs.h()), xs.t()))
         }
     }
+
+fun <A> Stream<A>.take_(n: Int): Stream<A>
+    = unfold(this) { xs: Stream<A> ->
+        when (xs) {
+            is Kons -> if (n < 1) None else Some(Pair(xs.h(), xs.t().take_(n-1)))
+            is Empty -> None
+        }
+    }
+
+fun <A> Stream<A>.takeWhile_(p: (A) -> Boolean): Stream<A>
+    = unfold(this) { xs: Stream<A> ->
+        when (xs) {
+            is Kons -> if (p(xs.h())) Some(Pair(xs.h(), xs.t())) else None
+            is Empty -> None
+        }
+    }
+
+fun <A, B, C> Stream<A>.zipWith(that: Stream<B>, f: (A,B) -> C): Stream<C>
+        = unfold(Pair(this, that)) { (xs, ys) ->
+            when (xs) {
+                is Empty -> None
+                is Kons -> when (ys) {
+                    is Empty -> None
+                    is Kons -> Some(Pair( f(xs.h(), ys.h()), Pair(xs.t(), ys.t())))
+                }
+            }
+        }
+
+fun <A, B> Stream<A>.zipAll(that: Stream<B>): Stream<Pair<Option<A>, Option<B>>>
+    = unfold(Pair(this, that)) { (xs, ys) ->
+        when (xs) {
+            is Empty -> when (ys) {
+                is Empty -> None
+                is Kons -> Some(Pair(Pair(None, Some(ys.h())), Pair(empty<A>(), ys.t())))
+            }
+            is Kons -> when (ys) {
+                is Empty -> Some(Pair(Pair(Some(xs.h()), None), Pair(xs.t(), empty<B>())))
+                is Kons -> Some(Pair(Pair(Some(xs.h()), Some(ys.h())), Pair(xs.t(), ys.t())))
+            }
+        }
+    }
+
+// exercise 5.14
+fun <A> Stream<A>.startsWith(that: Stream<A>): Boolean = this.zipAll(that)
+    .takeWhile_ { (_, b) -> b !is None }
+    .forAll { (a, b) -> a == b }
+
+// exercise 5.15
+fun <A> Stream<A>.tails(): Stream<Stream<A>> = unfold(this) { xs ->
+    when (xs) {
+        is Empty -> None
+        is Kons -> Some(Pair(xs, xs.t()))
+    }
+}
+
+// exercise 5.16
+fun <A, B> Stream<A>.scanRight(z: B, f: (A, () -> B) -> B): Stream<B> = TODO()
