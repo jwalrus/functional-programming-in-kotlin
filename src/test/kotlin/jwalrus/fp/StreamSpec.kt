@@ -1,6 +1,5 @@
 package jwalrus.fp
 
-import io.kotlintest.should
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.ShouldSpec
 
@@ -51,6 +50,7 @@ class StreamSpec : ShouldSpec ({
 
     should("map over values") {
         Stream.of(1, 2, 3).map { it * 2 }.toList() shouldBe Stream.of(2, 4, 6).toList()
+        Stream.of(1, 2, 3).map_ { it * 2 }.toList() shouldBe Stream.of(2, 4, 6).toList()
     }
 
     should("filter out odd numbers" ) {
@@ -67,13 +67,20 @@ class StreamSpec : ShouldSpec ({
 
     should("create a stream of As") {
         constant("A").take(3).toList() shouldBe Stream.of("A", "A", "A").toList()
+        constant_("A").take(3).toList() shouldBe Stream.of("A", "A", "A").toList()
     }
 
     should("create a sequence 3, 4, 5") {
         from(3).take(3).toList() shouldBe Stream.of(3, 4, 5).toList()
+        from_(3).take(3).toList() shouldBe Stream.of(3, 4, 5).toList()
     }
 
     should("generate first 8 fibonacci numbers") {
         fibs().take(8).toList() shouldBe List.of(0, 1, 1, 2, 3, 5, 8, 13)
+        fibs_().take(8).toList() shouldBe List.of(0, 1, 1, 2, 3, 5, 8, 13)
+    }
+
+    should("generate a stream of ones") {
+        ones_().take(3).toList() shouldBe List.of(1, 1, 1)
     }
 })

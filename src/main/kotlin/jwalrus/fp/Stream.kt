@@ -109,4 +109,23 @@ fun fibs(): Stream<Int> {
 }
 
 // exercise 5.11
-fun <A, S> unfold(z: S, f: (S) -> Option<Pair<A, S>>): Stream<A> = TODO()
+fun <A, S> unfold(z: S, f: (S) -> Option<Pair<A, S>>): Stream<A>
+    = f(z).map { (a,b) -> kons({ a }, { unfold(b, f)}) }.getOrElse { empty() }
+
+// exercise 5.12
+fun ones_(): Stream<Int> = unfold(1) { Some(Pair(1, 1)) }
+
+fun <A> constant_(a: A): Stream<A> = unfold(a) { b -> Some(Pair(b, b)) }
+
+fun from_(n: Int): Stream<Int> = unfold(n) { a -> Some(Pair(a, a + 1)) }
+
+fun fibs_(): Stream<Int> = unfold(Pair(0, 1)) { (a,b) -> Some(Pair(a, Pair(b, a + b))) }
+
+// exercise 5.13
+fun <A, B> Stream<A>.map_(f: (A) -> B): Stream<B>
+    = unfold(this) { xs: Stream<A> ->
+        when (xs) {
+            is Empty -> None
+            is Kons -> Some(Pair(f(xs.h()), xs.t()))
+        }
+    }
