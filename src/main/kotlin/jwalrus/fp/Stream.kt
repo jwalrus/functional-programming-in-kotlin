@@ -185,4 +185,4 @@ fun <A> Stream<A>.tails(): Stream<Stream<A>> = unfold(this) { xs ->
 }
 
 // exercise 5.16
-fun <A, B> Stream<A>.scanRight(z: B, f: (A, () -> B) -> B): Stream<B> = TODO()
+//fun <A, B> Stream<A>.scanRight(z: B, f: (A, () -> B) -> B): Stream<B> = TODO()
