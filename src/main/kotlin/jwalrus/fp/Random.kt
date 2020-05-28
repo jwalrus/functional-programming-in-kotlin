@@ -18,14 +18,14 @@ data class SimpleRNG(val seed: Long) : RNG {
 // exercise 6.1
 fun nonNegativeInt(rng: RNG): Pair<Int, RNG> {
     val (n, rng1) = rng.nextInt()
-    val rnd = if (n < 0) -(n+1) else n
+    val rnd = if (n < 0) -(n + 1) else n
     return Pair(rnd, rng1)
 }
 
 // exercise 6.2
 fun double(rng: RNG): Pair<Double, RNG> {
     val (n, rng1) = nonNegativeInt(rng)
-    return Pair(n.toDouble()/(Int.MAX_VALUE+1.0), rng1)
+    return Pair(n.toDouble() / (Int.MAX_VALUE + 1.0), rng1)
 }
 
 // exercise 6.3
@@ -53,7 +53,7 @@ fun ints(count: Int, rng: RNG): Pair<List<Int>, RNG> {
     tailrec fun go(n: Int, acc: List<Int>, rand: RNG): Pair<List<Int>, RNG> {
         if (n == 0) return Pair(acc, rand)
         val (i, rand1) = rand.nextInt()
-        return go(n-1, Cons(i, acc), rand1)
+        return go(n - 1, Cons(i, acc), rand1)
     }
     return go(count, List.empty(), rng)
 }
@@ -95,9 +95,9 @@ fun <A> sequence(fs: List<Rand<A>>): Rand<List<A>> = { rng ->
 }
 
 fun <A> sequence2(fs: List<Rand<A>>): Rand<List<A>> =
-    foldRight(fs, unit(List.empty<A>()), { f, acc ->
-        map2(f, acc, { h, t -> Cons(h, t) })
-    })
+        foldRight(fs, unit(List.empty<A>()), { f, acc ->
+            map2(f, acc, { h, t -> Cons(h, t) })
+        })
 
 fun ints2(count: Int, rng: RNG): Pair<List<Int>, RNG> {
     fun go(n: Int): List<Rand<Int>> =
@@ -107,4 +107,18 @@ fun ints2(count: Int, rng: RNG): Pair<List<Int>, RNG> {
 }
 
 // exercise 6.8
-fun <A, B> flatMap(f: Rand<A>, g: (A) -> Rand<B>): Rand<B> = TODO()
+fun <A, B> flatMap(f: Rand<A>, g: (A) -> Rand<B>): Rand<B> = { rng ->
+    val (a, rng1) = f(rng)
+    val (b, rng2) = g(a)(rng1)
+    Pair(b, rng2)
+}
+
+
+// exercise 6.9
+fun <A, B> mapF(s: Rand<A>, f: (A) -> B): Rand<B> = flatMap(s) { unit(f(it)) }
+
+fun <A, B, C> map2F(ra: Rand<A>, rb: Rand<B>, f: (A, B) -> C): Rand<C> = flatMap(ra) { a ->
+    flatMap(rb) { b ->
+        unit(f(a, b))
+    }
+}
